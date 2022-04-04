@@ -14,4 +14,59 @@ The codes should be self-explanatory, here, we stress out few points:
 * In C/C++, when an aray with length `n` is initialized, a piece of memory is reserved and the elements are stored **next to each other** - physically in the neighbouring memory slots. So 
 `(p+1)` is a pointing to the neighbouring address of `p` and `*(p+1)` is a value stored there, so equivalent to `p[0+1]`. `*p + 1` is adding 1 to the first element, the same as `p[0]+1`.
 * `q`is a pointer pointing to the one address "before" `p`. So `q[0]` is some unknown value stored at one memory "slot" before `p[0]`. Then `q[10] = p[9]` and `q[11]` is some unknown value stored right after the last element of array `p`. 
+* `int **M` is a pointer to pointer. Specifically, it is an array with length of 2 and these two elements are also pointers. First pointer `M[0]` points to yet another array with length 5, similarly `M[1]`. 
+* `M` points to `M[0]` and stores an address of `M[0]`, `*M` is a value pointed to by `M`. Equivalent to `M[0]`, but `M[0]` is now a pointer so printing `M[0]` will return another address, but this time it will be an address of the first element of array `M[0]` (with length 5), so equivalent to `&M[0][0]`. `**M` is dereferences the first element of `M[0]`, so it is the actual value of `M[0][0]` (which is 0 in our case).`M[1][3]` is 8 (value at 4-th position of second array),`*(M[0]+1)` is the same as `M[0][1] = 1` and `*(*(M+1)+3)` is the same here as `M[1][3] = 8`. 
 
+* The pointers `M[0],M[1]` are stored next to each other but the arrays {0,1,2,3,4} and {5,6,7,8,9} they are pointing to do not have to be next to each other. These two arrays are just two separate blocks of memory with length of 5*sizeof(int) somewhere in the memory.
+* The sample code is to be found in folder ` ./02_pointers/ex05_2.cpp`
+
+### Exercise 3 [Serial 2D Poisson solver]
+
+The final code can be found in `./03_poisson_solver_serial/` folder. Namely, there were three places where you should have added some piece of code:
+* `init_f` function in `init.cpp`:
+
+```C++
+void init_f(params p, double **f){
+    // printf("Function init_f (init.cpp l.97): not implemented.\n");
+    double dx=1/((double)p.nx-1), dy=1/((double)p.nx-1);
+    for (int i=0;i<p.nx;i++)
+        for (int j=0; j<p.ny;j++)
+        {
+            if (i==0 || j==0 || i==p.nx-1 || j==p.ny - 1)
+            {
+                f[i][j] = boundary(i*dx,j*dy,p.rhs_function);    
+            }
+            else
+            {
+                f[i][j] = source_term(i*dx,j*dy,p.rhs_function);    
+            }            
+        }
+}
+```
+where you should initialize the source term. You should distinguish the boundary and the area inside the domain. 
+
+* `jacobi_step` function in `jacobi.cpp`:
+```C++
+    for (int i=1; i<p.nx-1; i++){
+        for (int j=1; j<p.ny-1; j++)
+            u_new[i][j] = 0.25*(u_old[i-1][j] + u_old[i+1][j] + u_old[i][j-1] + u_old[i][j+1] - dx*dy*f[i][j]);
+    }
+```
+Here, only the double for loop should be added to update the `u_new` array using the update formula from the assignment sheet. Beware that the indices should not include first and the last one as here the values from boundary conditions should be preserved.
+
+* `norm_diff` function in `jacobi.cpp`:
+```C++
+double norm_diff(params p, double** mat1, double** mat2){
+    double sum = 0.0;
+    for (int i=0; i<p.nx; i++){
+    for (int j=0; j<p.ny; j++){
+        sum += (mat1[i][j] - mat2[i][j])*(mat1[i][j] - mat2[i][j]);
+    }
+    }
+    sum /= p.nx*p.ny;
+    sum = sqrt(sum);
+    // printf("Function norm_diff (jacobi.cpp l.12): not implemented.\n");
+    return sum;
+}
+```
+The above is just a simple implementation of the square difference formula provided in the assignment sheet.
