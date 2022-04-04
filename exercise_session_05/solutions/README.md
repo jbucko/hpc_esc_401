@@ -52,7 +52,7 @@ where you should initialize the source term. You should distinguish the boundary
             u_new[i][j] = 0.25*(u_old[i-1][j] + u_old[i+1][j] + u_old[i][j-1] + u_old[i][j+1] - dx*dy*f[i][j]);
     }
 ```
-Here, only the double for loop should be added to update the `u_new` array using the update formula from the assignment sheet. Beware that the indices should not include first and the last one as here the values from boundary conditions should be preserved.
+Here, only the double for loop should be added to update `u_new` array using the update formula from the assignment sheet. Beware that the indices should not include first and the last one as here the values from boundary conditions should be preserved.
 
 * `norm_diff` function in `jacobi.cpp`:
 ```C++
@@ -70,3 +70,9 @@ double norm_diff(params p, double** mat1, double** mat2){
 }
 ```
 The above is just a simple implementation of the square difference formula provided in the assignment sheet.
+
+Once you compile and run the code, you should have recieved solutions as in the figures below, for right hand side 1 and 2, respectively. When done correctly (and kept the default settings in `params.txt`), RHS 1 should exit after 19366 iterations and RHS 2 after 41021 iterations. 
+
+![alt text](https://github.com/jbucko/hpc_esc_401/blob/master/exercise_session_05/solutions/03_poisson_solver_serial/output/solution_rhs1.png)
+
+![alt text](https://github.com/jbucko/hpc_esc_401/blob/master/exercise_session_05/solutions/03_poisson_solver_serial/output/solution_rhs2.png)
