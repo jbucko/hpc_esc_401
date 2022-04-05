@@ -5,7 +5,7 @@ The codes should be self-explanatory, here, we stress out few points:
   * one can define `complex_vector` structure to be a type, so one can initialize complex vectors x,y,z as `complex_vector x,y,z;` (similar to initialization of e.g. integers `int i,j,k;`). Then, there is no need to use `struct` identifier anymore when referring to `complex_vector`.
   * one cannot (easily) define a specific lengths of `real` and `img` vectors in the structure/type definition and needs to set a specific length after the structure is initilized.
   * notice the way of passing the more complicated structure into function calls and then using them within the function definitions (`*` vs. ` &` symbols)
-  * one cannnot compile `.c` code (including `malloc()` call) using `CC` compiler, but it works the other way around. 
+  * one cannnot compile `.c` code (including `malloc()` call) using `CC` compiler by default but there is a way to adjust a code so C++ compiler can handle malloc calls). The compilation works the other way around, so `cc` compiler can handle also C++ syntax. 
 
 ### Exercise 2 [Pointers]
 
