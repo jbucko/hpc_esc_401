@@ -1,14 +1,14 @@
-### Exercise Sheet 6: solutions
+# Exercise Sheet 6: solutions
 
-#### Race conditions
+## 01 - Race conditions
 
-check many executables
+After parallelizing also the second for loop, one can observe the amount of 0's counted differs form run to run and it is not correct (check `./01_race_conditions/race_run/omp_race.logs`). To prevent this, one can use `atomic`, `critical` or `reduction` clauses, you can find the respective codes in `omp_atomic.c`, `omp_critical.c` and `omp_reduction.c` files and the output files in `<clause>_run` folder.
 
-#### Poisson solver - version 2
+## 02 - Poisson solver - OMP version
 
-Which parts of the codes should be parallelized? Most computationally heavy are nested for loops repeated in each iteration:  in jacobi_step and norm_diff of  jacobi.cpp.  OMP parallelization can be simply achieved by adding pragma directives right before the first for loop (one can easily test that is does not make much sense to parallelize both for loops. In norm_diff, one needs to take care to avoid race conditions related to variable `sum`. 
+Which parts of the codes should be parallelized? Most computationally heavy are nested for loops repeated in each iteration:  in `jacobi_step` and `norm_diff` of  `jacobi.cpp`.  OMP parallelization can be simply achieved by adding pragma directives right before the first for loop (one can easily test that is does not make much sense to parallelize both for loops. In norm_diff, one needs to take care to avoid race conditions related to variable `sum`. We also provide the output files from runs with 1,2,4 and 12 threads and for `nx = ny = 161` and `nx = ny = 256`. One can run these test using `./bash_run.sh <number_of_threads> <nx>`. 
 
-## Exercise 3
+## 03 - Time complexity
 
 * **Let’s first write an OpenMP version of `nbody.cpp`.  This code is slightly different from what you already encountered as it contains nested for loops.  Here you can decide toadd OpenMP parallel directive to the first, the second, or to both loops.  Which one is the most efficient solution, why?**
 
@@ -35,9 +35,9 @@ First, we add `#include "omp.h"` into `nbody.cpp` (we can again use the original
  29 }
 ```
 We can compile by typing
-`CC -g -ffast-math -fopenmp -o nbody_for1 nbody_for1.cpp`
+`CC -ffast-math -fopenmp -o nbody_for1 nbody_for1_args.cpp`
 and run via
-`sbatch run_nbody_for1.job`. 
+`sbatch run_nbody_for1_args.job`. 
 
 To measure time, we can use any timing library we like, in this solutions, we compiled the code under perftools-lite which provides the runtime in the log file.
 
@@ -87,13 +87,13 @@ We expect one positive integer to be passed when running the script. So `argc` w
  74 }
 ```
 
-which can be compiled using `CC -g -ffast-math -O3 -fopenmp -o nbody_serial_args nbody_serial_args.cpp`. 
+which can be compiled using `CC -ffast-math -O3 -fopenmp -o nbody_serial_args nbody_serial_args.cpp`. 
 
 * **Plot the execution time of the serial code with
 N= [100,500,1000,5000,10000,20000,50000]
-with  1  node  on  the  uzg2  partition  (using  a  bash  script  is  a  good  idea).   Repeat  the experiment with your OpenMP implementation using 12 threads.  Can you find a good fit to your results?**
+with  1  node  (using  a  bash  script  is  a  good  idea).   Repeat  the experiment with your OpenMP implementation using 12 threads.  Can you find a good fit to your results?**
 
-In this part, we provide the solutions using `uzh8` project, which is again operationl. To get the results for various N, one can e.g. following bash script:
+To get the results for various N, one can e.g. following bash script:
 
 ```scala
   1 #!/bin/bash -l
@@ -109,7 +109,7 @@ In this part, we provide the solutions using `uzh8` project, which is again oper
 
 One can choose "serial" of "for1" option stading for serial code vs. OMP code with first for loop parallelized. The resulting scaling is shown in the following plot:
 
-![](./Exercise3/scaling.jpg)
+![](./03_time_complexity/scaling.jpg)
 
 One can clearly observe the quadratic scaling, we display linear and quadratic fits and in the right panel also the serial runtimes divided by 12 for comparison. We include more data points than requested to demonstrate the scaling more clearly.
 
