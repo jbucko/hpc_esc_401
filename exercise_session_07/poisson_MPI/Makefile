@@ -7,13 +7,13 @@ CC = CC
 
 all: mpi_module.o init.o io.o jacobi.o main.o main 
 init.o: init.cpp init.h
-	${CC} ${CFLGAS} -c -o init.o init.cpp 
+	${CC} ${CFLAGS} -c -o init.o init.cpp 
 io.o: io.cpp io.h
-	${CC} ${CFLGAS} -c -o io.o io.cpp
+	${CC} ${CFLAGS} -c -o io.o io.cpp
 jacobi.o: jacobi.cpp jacobi.h
-	${CC} ${CFLGAS} -c -o jacobi.o jacobi.cpp
+	${CC} ${CFLAGS} -c -o jacobi.o jacobi.cpp
 mpi_module.o: mpi_module.cpp mpi_module.h
-	${CC} ${CFLGAS} -c -o mpi_module.o mpi_module.cpp
+	${CC} ${CFLAGS} -c -o mpi_module.o mpi_module.cpp
 main.o: main.cpp mpi_module.o jacobi.o io.o init.o
 	${CC} ${CFLAGS} -c -o main.o main.cpp 
 main:
