@@ -1,5 +1,5 @@
 CFLAGS=-O3 -ffast-math -mavx2
-CC=mpicc
+CC=cc
 
 all: ring_deadlock ring_split ring_nonblocking ring_cartesian 
 ring_deadlock: ring_deadlock.c

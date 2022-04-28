@@ -1,4 +1,5 @@
 #include "init.h"
+#include <math.h>
 /**
  * @brief      Reads parameters and update the params structure
  *

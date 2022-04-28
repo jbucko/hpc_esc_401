@@ -15,11 +15,12 @@ int main(int argc, char** argv) {
 
     double local_sum=0.;
     // double val=1.;
-    int pair = 0;
+    int pair;
     for(int i=my_rank; i<N; i+=size){
+        pair = i%2;
         // val = val*partial_inv_factorial(i, i-size);
-        local_sum += pow(-1,pair)/double(2*i + 1);
-        pair  = (pair + 1)%2;
+        local_sum += pow(-1,pair)/((double) (2*i + 1));
+        //pair  = (pair + 1)%2;
     }
     double global_sum=0;
     MPI_Reduce(&local_sum, &global_sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
