@@ -1,8 +1,0 @@
-rhs_function=2
-nx=128
-ny=128
-foutput=100000
-nstep_max=100000
-tolerance=1.0E-08
-domain_decomposition=2
-communication=2
