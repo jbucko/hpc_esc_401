@@ -1,8 +1,0 @@
-rhs_function=1
-nx=161
-ny=161
-foutput=1000
-nstep_max=100000
-tolerance=1.0E-08
-nproc_x=1
-nproc_y=4
