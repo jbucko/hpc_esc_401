@@ -11,7 +11,7 @@ for line in sys.stdin:
     except:
         continue
     # remove leading and trailing whitespace and punctuation
-    line = line.strip().translate(None, string.punctuation).lower()
+    line = line.strip().translate(None,string.punctuation).lower()
     # split the line into words
     words = line.split()
     # increase counters
