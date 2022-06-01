@@ -1,6 +1,6 @@
 CFLAGS=-O3 -ffast-math -mavx2
 CC=CC
-
+#CC=/usr/local/Cellar/open-mpi/4.1.1_2/bin/mpicxx
 all: mpi_module.o init.o io.o jacobi.o main.o main 
 init.o: init.cpp init.h
 	${CC} ${CFLAGS} -c -o init.o init.cpp 
