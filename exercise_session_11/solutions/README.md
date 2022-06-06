@@ -41,8 +41,9 @@ We use values of both `x,y` and output values of `y`, therefore it is enough to 
 
 There is several TODO's altogether in file `blur_openacc.cpp` which need to be addressed. We will comment on them in the following three bullet points
 
-
-1. First TODO is found right above the `blur()` function declaration:
+<ol>
+    
+<li> First TODO is found right above the `blur()` function declaration:
 
 ```C++
 #ifdef _OPENACC
@@ -54,7 +55,7 @@ double blur(int pos, const double *u)
 }
 ```
 
-If a function is expected to be executed on device, this function has to be declared so using a routine directive. As we aim for no further parallelization within the `blur()` function, it should be called sequentially. So the line completion should be 
+    If a function is expected to be executed on device, this function has to be declared so using a routine directive. As we aim for no further parallelization within the `blur()` function, it should be called sequentially. So the line completion should be 
 
 ```C++
 #ifdef _OPENACC
@@ -65,7 +66,10 @@ double blur(int pos, const double *u)
     return 0.25*(u[pos-1] + 2.0*u[pos] + u[pos+1]);
 }
 ```
-2. Two more TODO's are present in  `blur_twice_gpu_naive` below
+</li>
+    
+<li> Two more TODO's are present in  `blur_twice_gpu_naive` below
+    
 ```C++
 void blur_twice_gpu_naive(double *in , double *out , int n, int nsteps)
 {
@@ -88,6 +92,7 @@ void blur_twice_gpu_naive(double *in , double *out , int n, int nsteps)
     free(buffer);
 }
 ```
+                                 
 where we aim to make device calculations in two separate steps. First, we use values stored in `in` and define `buffer`. Therefore, we need to copy `in` into the device and copy `buffer` out. Second, we want to reuse the values in `buffer` and  UPDATE values in `out`. Therefore, the function should look as follows
 
 ```C++
@@ -111,9 +116,11 @@ void blur_twice_gpu_naive(double *in , double *out , int n, int nsteps)
 
     free(buffer);
 }
-```                                 
-
-3. There is also `blur_twice_gpu_nocopies` function, in which we should avoid copying data in and out of the device multiple times. 
+```              
+                                 
+</li>
+        
+<li> There is also `blur_twice_gpu_nocopies` function, in which we should avoid copying data in and out of the device multiple times. 
 
 ```C++                          
 void blur_twice_gpu_nocopies(double *in , double *out , int n, int nsteps)
@@ -172,10 +179,39 @@ void blur_twice_gpu_nocopies(double *in , double *out , int n, int nsteps)
     free(buffer);
 }
 ```
-
+</li>
+</ol>
+    
 ### Exercise 3 [basics/dot]
 
-...to be added...
+There is only one TODO in the last exercise. We need to include data clause to make the data handling efficient and include clause ensuring variable `sum` should keep track a global contributions to the scalar product among all the threads. It is enough to copy in vectors `x,y` and reduce the element-wise products to `sum`. So one should replace the original code
 
+```C++
+double dot_gpu(const double *x, const double *y, int n) {
+    double sum = 0;
+    int i;
 
+    // TODO: Offload this loop to the GPU
+    for (i = 0; i < n; ++i) {
+        sum += x[i]*y[i];
+    }
 
+    return sum;
+}
+```
+
+with
+
+```C++
+double dot_gpu(const double *x, const double *y, int n) {
+    double sum = 0;
+    int i;
+
+    # pragma acc parallel loop pcopyin(x[:n]) pcopyin(y[:n]) reduction(+:sum)
+    for (i = 0; i < n; ++i) {
+        sum += x[i]*y[i];
+    }
+
+    return sum;
+}
+```
