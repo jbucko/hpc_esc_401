@@ -39,7 +39,139 @@ We use values of both `x,y` and output values of `y`, therefore it is enough to 
 
 ### Exercise 2 [basics/blur]
 
-...to be added...
+There is several TODO's altogether in file `blur_openacc.cpp` which need to be addressed. We will comment on them in the following three bullet points
+
+
+1. First TODO is found right above the `blur()` function declaration:
+
+```C++
+#ifdef _OPENACC
+    // TODO: declare routine accordingly so as to be called from the GPU
+#endif
+double blur(int pos, const double *u)
+{
+    return 0.25*(u[pos-1] + 2.0*u[pos] + u[pos+1]);
+}
+```
+
+If a function is expected to be executed on device, this function has to be declared so using a routine directive. As we aim for no further parallelization within the `blur()` function, it should be called sequentially. So the line completion should be 
+
+```C++
+#ifdef _OPENACC
+    #pragma acc routine seq
+#endif
+double blur(int pos, const double *u)
+{
+    return 0.25*(u[pos-1] + 2.0*u[pos] + u[pos+1]);
+}
+```
+2. Two more TODO's are present in  `blur_twice_gpu_naive` below
+```C++
+void blur_twice_gpu_naive(double *in , double *out , int n, int nsteps)
+{
+    double *buffer = malloc_host<double>(n);
+
+    for (auto istep = 0; istep < nsteps; ++istep) {
+        // TODO: offload this loop to the GPU
+        for (auto i = 1; i < n-1; ++i) {
+            buffer[i] = blur(i, in);
+        }
+
+        // TODO: offload this loop to the GPU
+        for (auto i = 2; i < n-2; ++i) {
+            out[i] = blur(i, buffer);
+        }
+
+        in = out;
+    }
+
+    free(buffer);
+}
+```
+where we aim to make device calculations in two separate steps. First, we use values stored in `in` and define `buffer`. Therefore, we need to copy `in` into the device and copy `buffer` out. Second, we want to reuse the values in `buffer` and  UPDATE values in `out`. Therefore, the function should look as follows
+
+```C++
+void blur_twice_gpu_naive(double *in , double *out , int n, int nsteps)
+{
+    double *buffer = malloc_host<double>(n);
+
+    for (auto istep = 0; istep < nsteps; ++istep) {
+        #pragma acc parallel loop pcopyin(in[0:n]) pcopyout(buffer[0:n])
+        for (auto i = 1; i < n-1; ++i) {
+            buffer[i] = blur(i, in);
+        }
+
+        #pragma acc parallel loop pcopyin(buffer[0:n]) pcopy(out[0:n])
+        for (auto i = 2; i < n-2; ++i) {
+            out[i] = blur(i, buffer);
+        }
+
+        in = out;
+    }
+
+    free(buffer);
+}
+```                                 
+
+4. There is also `blur_twice_gpu_nocopies` function, in which we should avoid copying data in and out of the device multiple times. 
+
+```C++                          
+void blur_twice_gpu_nocopies(double *in , double *out , int n, int nsteps)
+{
+    double *buffer = malloc_host<double>(n);
+
+    // TODO: move the data needed by the algorithm to the GPU
+    {
+        for (auto istep = 0; istep < nsteps; ++istep) {
+            // TODO: offload this loop to the GPU
+            for (auto i = 1; i < n-1; ++i) {
+                buffer[i] = blur(i, in);
+            }
+
+            // TODO: offload this loop to the GPU
+            for (auto i = 2; i < n-2; ++i) {
+                out[i] = blur(i, buffer);
+            }
+
+            // TODO: offload this loop to the GPU; can you try just the pointer assignment?
+            for (auto i = 0; i < n; ++i) {
+                in[i] = out[i];
+            }
+        }
+    }
+
+    free(buffer);
+}
+```
+We should complete data clause in front of parallel block. We want to copy in `in`, copy in and out elements of `out` and use temporary array called `buffer`. Then, we just put three clauses to parallel for loops in front of each for loop within the parallel region. The resulting function should look as below
+```C++
+void blur_twice_gpu_nocopies(double *in , double *out , int n, int nsteps)
+{
+    double *buffer = malloc_host<double>(n);
+
+    #pragma acc data pcopyin(in[0:n]) pcopy(out[0:n]) pcreate(buffer[0:n])
+    {
+        for (auto istep = 0; istep < nsteps; ++istep) {
+            #pragma acc parallel loop
+            for (auto i = 1; i < n-1; ++i) {
+                buffer[i] = blur(i, in);
+            }
+
+            #pragma acc parallel loop
+            for (auto i = 2; i < n-2; ++i) {
+                out[i] = blur(i, buffer);
+            }
+
+            #pragma acc parallel loop
+            for (auto i = 0; i < n; ++i) {
+                in[i] = out[i];
+            }
+        }
+    }
+
+    free(buffer);
+}
+```
 
 ### Exercise 3 [basics/dot]
 
