@@ -113,7 +113,7 @@ void blur_twice_gpu_naive(double *in , double *out , int n, int nsteps)
 }
 ```                                 
 
-4. There is also `blur_twice_gpu_nocopies` function, in which we should avoid copying data in and out of the device multiple times. 
+3. There is also `blur_twice_gpu_nocopies` function, in which we should avoid copying data in and out of the device multiple times. 
 
 ```C++                          
 void blur_twice_gpu_nocopies(double *in , double *out , int n, int nsteps)
