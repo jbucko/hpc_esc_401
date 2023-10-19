@@ -1,0 +1,17 @@
+#!/bin/bash -l
+#SBATCH --job-name="omp test"
+#SBATCH --account="uzh8"
+#SBATCH --time=00:03:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-core=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=128
+#SBATCH --partition=debug
+#SBATCH --constraint=mc
+#SBATCH --hint=nomultithread
+#SBATCH --output="omp_output.log"
+#SBATCH --error="omp_error.log"
+
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+
+srun cpi_omp

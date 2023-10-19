@@ -1,0 +1,26 @@
+Process rank: 2
+total ellapsed time using getTime: 0.4744 seconds
+Process rank: 3
+total ellapsed time using getTime: 0.4744 seconds
+Process rank: 4
+total ellapsed time using getTime: 0.4743 seconds
+Process rank: 5
+total ellapsed time using getTime: 0.4743 seconds
+Process rank: 6
+total ellapsed time using getTime: 0.4743 seconds
+Process rank: 7
+total ellapsed time using getTime: 0.4743 seconds
+Process rank: 9
+total ellapsed time using getTime: 0.4744 seconds
+Process rank: 10
+total ellapsed time using getTime: 0.4744 seconds
+Process rank: 11
+total ellapsed time using getTime: 0.4744 seconds
+Process rank: 1
+total ellapsed time using getTime: 0.4744 seconds
+Process rank: 8
+total ellapsed time using getTime: 0.4743 seconds
+Process rank: 0
+pi is approximately 3.1415926555898399, Error is 0.0000000020000468
+Computed in 0.3768 seconds
+total ellapsed time using getTime: 0.379 seconds
