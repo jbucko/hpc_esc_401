@@ -96,7 +96,7 @@ double boundary(double x, double y, int rhs_function){
  */
 void init_f(params p, double **f){
     // printf("Function init_f (init.cpp l.97): not implemented.\n");
-    double dx=1/((double)p.nx-1), dy=1/((double)p.nx-1);
+    double dx=1/((double)p.nx-1), dy=1/((double)p.ny-1);
     for (int i=p.xmin;i<p.xmax;i++)
         for (int j=p.ymin; j<p.ymax;j++)
         {
