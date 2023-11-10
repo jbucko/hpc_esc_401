@@ -12,9 +12,9 @@ jacobi.o: jacobi.cpp jacobi.h
 	${CC} ${CFLAGS} -c -o jacobi.o jacobi.cpp
 mpi_module.o: mpi_module.cpp mpi_module.h
 	${CC} ${CFLAGS} -c -o mpi_module.o mpi_module.cpp
-main.o: main.cpp mpi_module.o jacobi.o io.o init.o
+main.o: main.cpp
 	${CC} ${CFLAGS} -c -o main.o main.cpp 
-main:
+main: mpi_module.o jacobi.o io.o init.o main.o
 	${CC} -o main main.o init.o io.o jacobi.o mpi_module.o
 
 clean: 
