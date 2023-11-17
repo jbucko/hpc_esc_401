@@ -1,0 +1,1 @@
+No new exercise is released this week, we will continue working on the MPI Poisson solver.
