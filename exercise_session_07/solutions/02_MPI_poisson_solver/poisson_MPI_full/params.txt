@@ -1,0 +1,9 @@
+rhs_function=1
+nx=161
+ny=161
+foutput=1000
+nstep_max=100000
+tolerance=1.0E-08
+domain_decomposition=2
+communication=3
+store_rank0=0
