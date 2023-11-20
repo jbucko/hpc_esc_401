@@ -18,6 +18,7 @@ int close_MPI(){
 
 int mpi_get_domain(int nx, int ny, int my_rank, int size, params *p){
 
+    // this is the most basic 1D slab decomposition: ***|***|***|*****
 	if (p->domain_decomposition==1){
         // Number of process in each dimension
         p->nproc_x = size;
@@ -50,6 +51,7 @@ int mpi_get_domain(int nx, int ny, int my_rank, int size, params *p){
 	}
 
 	else if (p->domain_decomposition==2){
+        // this is more balanced 1D slab decomposition: ****|****|***|***
         // Number of process in each dimension
         p->nproc_x = size;
         p->nproc_y = 1;
@@ -84,6 +86,7 @@ int mpi_get_domain(int nx, int ny, int my_rank, int size, params *p){
 	}
 
 	else if (p->domain_decomposition==3){
+        // cartesian topology
         int indices[2];
         int dims[2] = {0, 0};
 

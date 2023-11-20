@@ -91,10 +91,10 @@ void output(params p, int step, double** u_new, int rank){
  * @param[in]  size     The total number of processes
  */
 void output_rank0(params p, int step, double** u_new, int rank, int size){
-    // Define a new 1D array to collect all elements of a local f subgrid in a single array of size (p.xmax-p.xmin)*(p.xmax-p.xmin)
+    // Define a new 1D array to collect all elements of a local u_new subgrid in a single array of size (p.xmax-p.xmin)*(p.xmax-p.xmin)
     double* u_new_linear = new double[(p.xmax-p.xmin)*(p.ymax-p.ymin)];
 
-    // Collect the elements of f in f_linear
+    // Collect the elements of a local subgrid u_new into u_new_linear
     int linear_index = 0;
     for (int i=p.xmin; i<p.xmax; i++){
         for (int j=p.ymin; j<p.ymax; j++){
@@ -104,34 +104,29 @@ void output_rank0(params p, int step, double** u_new, int rank, int size){
     }
 
     // Calculate the total number of elements that will be gathered
-    // printf("I am rank %d, p_xmin, p_xmax, p_ymin, p_ymax: %d, %d, %d, %d\n",rank,p_xmin,p_xmax,p_ymin,p_ymax);
     int total_elements = (p.xmax - p.xmin)*(p.ymax - p.ymin);
-    // printf("I am rank %d and have number of grid points %d\n",rank,total_elements);
     
+    // create a custom MPI datatype. This will easily allow us to send vectors of different length in a single MPI_Gatherv command
     MPI_Datatype stype;
     MPI_Type_vector(total_elements, 1, 1, MPI_DOUBLE, &stype); 
     MPI_Type_commit( &stype );
-    double** u_new_combined;
-    double* u_new_combined_linear;
-    int* recvcounts;
+    double* u_new_combined_linear; // new combined linear array
+    double** u_new_combined; // new combined 2D array/matrix
+    int* recvcounts; // array storing the lengths of linearized subgrids used by MPI_Gatherv command
     
-    // Collect the data from all processes in f_combined_linear on the root process
+    // Collect the information about the number of elements of u_new_linear to be sent to rank 0 later
     recvcounts = new int[size];
-    // printf("entering gather for rank %d, sending %d\n",rank,total_elements);
     MPI_Gather(&total_elements,1,MPI_INTEGER,recvcounts,1,MPI_INTEGER,0,MPI_COMM_WORLD);
-    // printf("gathered for rank %d\n",rank);
     MPI_Barrier(MPI_COMM_WORLD);
+    
     if (rank == 0){
+        // define the displacements at rank0, at which the incoming lienarized arrays will be stored
         int* displs = new int[size];
-        // for (int i=0;i<size;i++){
-        //     printf("recvcounts: %d\n",recvcounts[i]);
-        // }
         displs[0] = 0;
         for (int i=1;i<size;i++){
             displs[i] = displs[i-1] + recvcounts[i-1];
-        //     printf("displs: %d\n",displs[i]);
         }
-        // Gather the data from all processes in f_combined_linear on the root process
+        // Gather the data from all processes in u_new_combined_linear on the root process
         u_new_combined_linear = new double[p.nx*p.ny];
         MPI_Gatherv(u_new_linear, 1, stype, u_new_combined_linear, recvcounts, displs, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
@@ -141,10 +136,11 @@ void output_rank0(params p, int step, double** u_new, int rank, int size){
         delete[] displs;
     }
     else{
-        
+        // Gatherv command for all the ranks except for rank0 - observe the NULL's in the call, this are info specific to and defined only for rank0
         MPI_Gatherv(u_new_linear, 1, stype, NULL, NULL, NULL, NULL, 0, MPI_COMM_WORLD);
     }
     MPI_Barrier(MPI_COMM_WORLD);
+    
     // Collect the linear data in f_combined_linear in a 2D array f_combined
     if (rank == 0){
 
@@ -190,18 +186,20 @@ void output_source_rank0(params p, double** f, int rank, int size){
     // Calculate the total number of elements that will be gathered
     int total_elements = (p.xmax - p.xmin)*(p.ymax - p.ymin);
     
+    // create a custom MPI datatype. This will easily allow us to send vectors of different length in a single MPI_Gatherv command
     MPI_Datatype stype;
     MPI_Type_vector(total_elements, 1, 1, MPI_DOUBLE, &stype); 
     MPI_Type_commit( &stype );
-    double** f_combined;
-    double* f_combined_linear;
-    int* recvcounts;
+    double** f_combined; // new combined linear array
+    double* f_combined_linear; // new combined 2D array/matrix
+    int* recvcounts; // array storing the lengths of linearized subgrids used by MPI_Gatherv command
     
     // Collect the data from all processes in f_combined_linear on the root process
     recvcounts = new int[size];
     MPI_Gather(&total_elements,1,MPI_INTEGER,recvcounts,1,MPI_INTEGER,0,MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
     if (rank == 0){
+        // define the displacements at rank0, at which the incoming lienarized arrays will be stored
         int* displs = new int[size];
         displs[0] = 0;
         for (int i=1;i<size;i++){
@@ -217,7 +215,7 @@ void output_source_rank0(params p, double** f, int rank, int size){
         delete[] displs;
     }
     else{
-        
+        // Gatherv command for all the ranks except for rank0 - observe the NULL's in the call, this are info specific to and defined only for rank0
         MPI_Gatherv(f_linear, 1, stype, NULL, NULL, NULL, NULL, 0, MPI_COMM_WORLD);
     }
     MPI_Barrier(MPI_COMM_WORLD);

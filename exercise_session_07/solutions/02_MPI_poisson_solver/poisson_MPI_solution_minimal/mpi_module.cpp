@@ -63,13 +63,13 @@ void halo_comm(params p, int my_rank, int size, double** u,
     /*-----------------------------------------------------*/
 
 
- //    double col_to_right[size_y], col_to_left[size_y];
-	// for (int j=0;j<size_y;j++) col_to_right[j] = u[size_x - 1][j];
-	// for (int j=0;j<size_y;j++) col_to_left[j] = u[0][j];
+    // double col_to_right[size_y], col_to_left[size_y];
+    // for (int j=0;j<size_y;j++) col_to_right[j] = u[size_x - 1][j];
+    // for (int j=0;j<size_y;j++) col_to_left[j] = u[0][j];
 
 
 
- //    // Blocking communication strategy
+    // Blocking communication strategy
 
 	// if (p.my_group==1){
 	// 	if (p.right_rank>=0) MPI_Send(col_to_right, size_y, MPI_DOUBLE, p.right_rank, 0, MPI_COMM_WORLD);
@@ -99,6 +99,7 @@ void halo_comm(params p, int my_rank, int size, double** u,
     // Blocking communication strategy
 
     if (p.my_group==1){
+        // issue MPI command only if valid left/right neighbour
         if (p.right_rank>=0) MPI_Send(&u[p.xmax-p.xmin-1][0], 1, column_type, p.right_rank, 0, MPI_COMM_WORLD);
         if (p.left_rank>=0)  MPI_Send(&u[0][0], 1, column_type, p.left_rank,  0, MPI_COMM_WORLD);
         if (p.left_rank>=0)  MPI_Recv(fromLeft,     size_y, MPI_DOUBLE, p.left_rank,  0, MPI_COMM_WORLD, MPI_STATUS_IGNORE); 
@@ -113,7 +114,6 @@ void halo_comm(params p, int my_rank, int size, double** u,
 
     /*-------------------------------------------------------*/
 }
-
 
 int ALLREDUCE(double* loc_diff, double* loc_sumdiff){
 
