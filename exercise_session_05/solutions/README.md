@@ -11,7 +11,7 @@ group members have read and execute permissions, non-group members have read and
 
 New files created in these both directories have `rw-r--r--` permission.
 
-The permission in my `$HOME` directory is `rwxr-x---`, which means only me and members of the `uzh27` group could read and execute files there.
+The permission in my `$HOME` directory is `rwxr-----`, which means only me and members of the `uzh27` group could read files there.
 
 **What command can you use to set the access permissions for a directory so only the owner has (full) access?**
 
