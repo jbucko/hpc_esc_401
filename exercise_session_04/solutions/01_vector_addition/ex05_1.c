@@ -39,6 +39,12 @@ int main(void){
 		printf("real: x[i]=%d, y[i]=%d, a=%d, x[i]+ay[i]=%d \n",x.real[i],y.real[i],a,z.real[i]);
 		printf("imaginary: x[i]=%d, y[i]=%d, a=%d, x[i]+ay[i]=%d \n",x.img[i],y.img[i],a,z.img[i]);
 	}
-	
+
+	free(x.real);
+	free(x.img);
+	free(y.real);
+	free(y.img);
+	free(z.real);
+	free(z.img);
 	return 0;
 }
