@@ -1,6 +1,6 @@
-# Exercise session 04
+# Exercise session 05
 
-## Exercise 01
+## Exercise 02
 
 **Permissions:**
 
@@ -26,6 +26,6 @@ After creating the file, you can add writing permission the group members with `
 Hopefully the file is not lost after setting permission to `000`. Even though no user can read, write or execute the file, 
 the owner still can change the permissions and recover the file.
 
-## Exercise 02,  03 and 04 (Bonus)
+## Exercise 03,  04 and Bonus
 
 An exemple of such scripts are in the respective folders.
