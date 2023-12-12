@@ -32,4 +32,17 @@ Exercise 02
       hadoop fs -get ./output/part-00000 .
    ```
 
-We attach the output file (`part-00000`) and the log file from the map&reduce run (`pymapred.log`).
+We attach the output file (`part-00000`) and the log file from the map&reduce run (`pymapred.log`). Some informative lines from the log file are the following:
+
+```text
+Launched map tasks=7
+Launched reduce tasks=1
+
+Map input records=35371
+Map output records=538568
+
+Reduce input records=538568
+Reduce output records=47090
+```
+
+Especially, the last row of the above is number of items in the `part-00000` file. 
