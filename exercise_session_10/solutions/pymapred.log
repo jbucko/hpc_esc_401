@@ -77,4 +77,4 @@
 		Bytes Read=12913825
 	File Output Format Counters 
 		Bytes Written=642476
-2023-12-12 11:04:28,224 INFO streaming.StreamJob: Output directory: outputDonaldTrump_dir
+2023-12-12 11:04:28,224 INFO streaming.StreamJob: Output directory: output
