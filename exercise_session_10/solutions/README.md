@@ -10,7 +10,7 @@ Exercise 02
 
   * In the first part, let's run map & reduce on Eiger instead of distributed file system. Log into Eiger and enter the cloned `exercise_session_10` directory. Then execure the following commands, piped together:
   ```bash
-     cat trump_tweets_0* | ./mapper.py | sort  | ./reducer.py > output.log
+     cat trump_tweets_0* | ./mapper.py | sort | ./reducer.py > output.log
   ```
  We will find the output of map & reduce in `output.log` file.
 
