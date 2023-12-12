@@ -46,3 +46,5 @@ Reduce output records=47090
 ```
 
 Especially, the last row of the above is number of items in the `part-00000` file. 
+
+Web API can be accessed under `http://localhost:9870`. The output files can be found by navigating to `utilities -> Browse the file system -> user -> ubuntu -> output`
