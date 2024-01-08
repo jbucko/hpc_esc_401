@@ -46,7 +46,59 @@ PI = 3.141592653589793 computed in 0.101 seconds
 
 ## Exercise 2
 
-Instead of five, we obtain only a single print statement (time). For larger number of blocks and threads per block, we get times ~0.01s similar to those obtained in openacc (not initial time). With CUDA the situation is similar and one should also get first slow iteration followed by much faster ones. However, CUDA code timing is now different - it measures only the time of parallel computation and not of the whole code. If we did that and included a for loop, we would get results similar to openacc.
+Instead of five, we obtain only a single print statement (time). For larger number of blocks and threads per block, we get times ~0.01s similar to those obtained in openacc (not initial time). With CUDA the situation is similar and one should also get first slow iteration followed by much faster ones. However, CUDA code timing is now different - it measures only the time of parallel computation and not of the whole code. Once we include a for loop and move the first `getTime()` call in front of all CUDA-related lines as below:
+
+```C++
+// Main routine that executes on the host
+int main(void) {
+	dim3 dimGrid(NUM_BLOCK,1,1);  // Grid dimensions
+	dim3 dimBlock(NUM_THREAD,1,1);  // Block dimensions
+	double *sumHost, *sumDev;  // Pointer to host & device arrays
+	double pi = 0;
+	int tid;
+
+	for (int j=0;j<5;j++){
+
+		double step = 1.0/NBIN;  // Step size
+		size_t size = NUM_BLOCK*NUM_THREAD*sizeof(double);  //Array memory size
+		
+		double start = getTime();
+		
+		sumHost = (double *)malloc(size);  //  Allocate array on host
+		cudaMalloc((void **) &sumDev, size);  // Allocate array on device
+		// Initialize array in device to 0
+		cudaMemset(sumDev, 0, size);
+		// Do calculation on device
+		cal_pi <<<dimGrid, dimBlock>>> (sumDev, NBIN, step, NUM_THREAD, NUM_BLOCK); // call CUDA kernel
+		// Retrieve result from device and store it in host array
+		cudaMemcpy(sumHost, sumDev, size, cudaMemcpyDeviceToHost);
+		for(tid=0; tid<NUM_THREAD*NUM_BLOCK; tid++)
+			pi += sumHost[tid];
+		pi *= step;
+
+		// Print results
+		double delta = getTime() - start;
+		printf("PI = %.16g computed in %.4g seconds\n", pi, delta);
+
+	}
+	
+	// Cleanup
+	free(sumHost);
+	cudaFree(sumDev);
+
+	return 0;
+}
+```
+
+we obtain the following timings:
+
+```
+PI = 3.14159265358979 computed in 0.5518 seconds
+PI = 3.141592656731382 computed in 0.08399 seconds
+PI = 3.141592656731382 computed in 0.0786 seconds
+PI = 3.141592656731382 computed in 0.07723 seconds
+PI = 3.141592656731382 computed in 0.07692 seconds
+```
 
 ## Exercise 3
 
